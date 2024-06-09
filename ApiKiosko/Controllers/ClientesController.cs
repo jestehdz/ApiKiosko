@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiKiosko.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class ClientesController : Controller
     {
         private readonly AppDbContext _context;
@@ -17,6 +19,7 @@ namespace ApiKiosko.Controllers
             Clientes = clientes;
             Response = new Response();
         }
+        // GET: api/Clientes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Clientes>>> GetClientes()
         {
@@ -24,8 +27,8 @@ namespace ApiKiosko.Controllers
             {
                 //return await _context.Clientes.ToListAsync();
                 var lista = await Clientes.GetClientes();
-                Response.Result = lista;
-                Response.DisplayMessage = "Clientes";
+                Response.Result = lista ;
+                Response.DisplayMessage = "Listado de Clientes";
             }
             catch (Exception ex)
             {
@@ -37,7 +40,7 @@ namespace ApiKiosko.Controllers
 
         // GET: api/Clientes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Clientes>> GetClientesById(int id)
+        public async Task<ActionResult<Clientes>> GetClienteById(int id)
         {
             try
             {
