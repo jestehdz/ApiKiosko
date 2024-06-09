@@ -12,6 +12,7 @@ namespace ApiKiosko.Models
         public int id_producto { get; set; }
         public string producto { get; set; }
         public decimal cantidad { get; set; }
+        public decimal Valor { get; set; }
         public DateTime fecha { get; set; }
     }
 }
