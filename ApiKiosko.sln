@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiKiosko", "ApiKiosko\ApiKiosko.csproj", "{7BFDD813-4F5C-4CEB-BB49-4C627C76D6BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7BFDD813-4F5C-4CEB-BB49-4C627C76D6BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BFDD813-4F5C-4CEB-BB49-4C627C76D6BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BFDD813-4F5C-4CEB-BB49-4C627C76D6BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BFDD813-4F5C-4CEB-BB49-4C627C76D6BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {73F14233-7933-4D2A-9EAA-78D2737B799B}
+	EndGlobalSection
+EndGlobal
