@@ -45,7 +45,7 @@ namespace ApiKiosko.Mappers
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<Ventas> CreateVenta(Ventas ventas)
+        public async Task<String> CreateVenta(Ventas ventas)
         {
 
             Clientes clienteNombre = await _context.Clientes.FindAsync(ventas.id_cliente);
@@ -61,7 +61,7 @@ namespace ApiKiosko.Mappers
                 await _context.SaveChangesAsync();
                 //return Ventas;
             }
-            return Ventas;
+            return "Se creo satisfactoriamente el pedido.";
         }
         public async Task<Ventas> UpdateVenta(int id, Ventas ventas)
         {

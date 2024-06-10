@@ -81,20 +81,19 @@ namespace ApiKiosko.Controllers
         // POST: api/Ventas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Ventas>> PostVentas(Ventas Ventas_)
+        public async Task<ActionResult<string>> PostVentas(Ventas Ventas_)
         {
             try
             {
                 var producto = await Ventas.CreateVenta(Ventas_);
                 Response.Result = producto;
-                Response.DisplayMessage = $"Se ha creado satisfactoriamente el producto {producto.producto} " +
-                    $"que cuenta con el ID N°{producto.Id}";
+                Response.DisplayMessage = $"Se ha creado satisfactoriamente el pedido.";
                 return Ok(Response);
             }
             catch (Exception ex)
             {
                 Response.IsSuccess = false;
-                Response.DisplayMessage = $"Se produjo un error al momento de crear el producto {Ventas_.producto}," +
+                Response.DisplayMessage = $"Se produjo un error al momento de crear el pedido," +
                     $"por favor contacte con el administrador";
                 Response.ErrorMessages = new List<string> { ex.ToString() };
                 return BadRequest(Response);

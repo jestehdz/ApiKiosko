@@ -7,7 +7,7 @@ namespace ApiKiosko.Interfaces
         Task<List<Ventas>> GetVentas();
         Task<Ventas> GetVentasById(int Id);
         Task<bool> DeleteVentas(int Id);
-        Task<Ventas> CreateVenta(Ventas ventas);
+        Task<string> CreateVenta(Ventas ventas);
         Task<Ventas> UpdateVenta(int id, Ventas ventas);
     }
 }
