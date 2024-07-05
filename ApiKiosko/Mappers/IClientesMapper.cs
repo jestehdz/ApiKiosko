@@ -33,10 +33,11 @@ namespace ApiKiosko.Mappers
 
         public async Task<bool> DeleteCliente(int Id)
         {
-
-            Clientes Cliente = await _context.Clientes.FindAsync(Id);
+            
+            var Cliente = _context.Clientes.Where(i => i.Id == Id).FirstOrDefault() ;
             if (Cliente == null)
             {
+                
                 return false;
             }
             _context.Clientes.Remove(Cliente);
@@ -59,8 +60,6 @@ namespace ApiKiosko.Mappers
             _context.Clientes.Update(Cliente);
             await _context.SaveChangesAsync();
             return Cliente;
-            //Productos productos_ = //appDb.Productos.Update(producto);
-            return null;
 
         }
     }
