@@ -63,9 +63,6 @@ namespace ApiKiosko.Mappers
             appDb.Productos.Update(producto);
             await appDb.SaveChangesAsync();
             return producto;
-            //Productos productos_ = //appDb.Productos.Update(producto);
-            return null;
-
         }
 
     }
