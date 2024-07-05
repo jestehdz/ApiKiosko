@@ -7,5 +7,6 @@
         public required decimal Precio { get; set;}
         public required decimal Stock { get; set;}
         public required decimal Inv_Act { get; set;}
+        public required decimal unidades { get; set;}
     }
 }

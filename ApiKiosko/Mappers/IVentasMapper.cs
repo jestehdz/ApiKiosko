@@ -2,6 +2,7 @@
 using ApiKiosko.Interfaces;
 using ApiKiosko.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 
 namespace ApiKiosko.Mappers
 {
@@ -14,18 +15,32 @@ namespace ApiKiosko.Mappers
             _context = context;
         }
 
-        public async Task<List<Ventas>> GetVentas()
+        public async Task<List<OrderHed>> GetVentas()
         {
-            List<Ventas> Ventas = await _context.Ventas.ToListAsync();
+            List<OrderHed> Ventas = await _context.OrderHed.ToListAsync();
             return Ventas;
         }
 
-        public async Task<Ventas> GetVentasById(int Id)
+        public async Task<OrderHed> GetVentasById(int Id)
         {
-            Ventas Ventas = await _context.Ventas.FindAsync(Id);
+            OrderHed Ventas = await _context.OrderHed.FindAsync(Id);
             if (Ventas != null)
             {
                 return Ventas;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public async Task<List<OrderDtl>> GetOrderDtlByID_Ov(int ID_ov)
+        {
+            var orderdtl = await _context.orderDtl.Where(o => o.ID_OrderHed == ID_ov).ToListAsync();
+            if (orderdtl != null)
+            {
+                List<OrderDtl> order = new List<OrderDtl>() ;
+                order = orderdtl;
+                return order;
             }
             else
             {
@@ -36,79 +51,83 @@ namespace ApiKiosko.Mappers
         public async Task<bool> DeleteVentas(int Id)
         {
 
-            Ventas ventas = await _context.Ventas.FindAsync(Id);
+            OrderHed ventas = await _context.OrderHed.FindAsync(Id);
             if (ventas == null)
             {
                 return false;
             }
-            _context.Ventas.Remove(ventas);
+            _context.OrderHed.Remove(ventas);
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<String> CreateVenta(Ventas ventas)
+        public async Task<String> CreateVenta(OrderHed ventas)
         {
 
-            Clientes clienteNombre = await _context.Clientes.FindAsync(ventas.id_cliente);
-            Productos productosnombre = await _context.Productos.FindAsync(ventas.id_producto);
+            var clienteNombre =  _context.Clientes.Where(s =>  s.Id == ventas.id_cliente).FirstOrDefault();
+            //Productos productosnombre = await _context.Productos.FindAsync(ventas.id_producto);
             ventas.cliente = clienteNombre.Nombres;
-            ventas.producto = productosnombre.Producto;
-            ventas.Valor = productosnombre.Precio * ventas.cantidad;
-            Ventas Ventas = ventas;
-            bool Venta = venta(ventas.cantidad, ventas.id_producto,"C");
-            if (Venta)
-            {
-                _context.Ventas.Add(Ventas);
+            ventas.nit = clienteNombre.Num_Doc;
+            ventas.direccion = clienteNombre.Direccion;
+            ventas.invoice = false;
+            ventas.fecha = DateTime.Now;
+            //ventas.producto = productosnombre.Producto;
+            //ventas.Valor = productosnombre.Precio * ventas.cantidad;
+            OrderHed Ventas = ventas;
+            //bool Venta = venta(ventas.cantidad, ventas.id_producto,"C");
+            
+                _context.OrderHed.Add(Ventas);
                 await _context.SaveChangesAsync();
                 //return Ventas;
-            }
+            
             return "Se creo satisfactoriamente el pedido.";
         }
-        public async Task<Ventas> UpdateVenta(int id, Ventas ventas)
+        public async Task<OrderHed> UpdateVenta(int id, OrderHed ventas)
         {
             if (id != ventas.Id)
             {
                 ventas.Id = id;
             }
             Clientes clienteNombre = await _context.Clientes.FindAsync(ventas.id_cliente);
-            Productos productosnombre = await _context.Productos.FindAsync(ventas.id_producto);
-            ventas.cliente = clienteNombre.Nombres + " "+clienteNombre.Apellidos;
-            ventas.producto = productosnombre.Producto;
-            ventas.Valor = productosnombre.Precio * ventas.cantidad;
-            bool Venta = venta(ventas.cantidad, ventas.id_producto,"U");
-            if (Venta)
-            {
-                _context.Ventas.Update(ventas);
+           ventas.cliente = clienteNombre.Nombres + " "+clienteNombre.Apellidos;
+            
+                _context.OrderHed.Update(ventas);
                 await _context.SaveChangesAsync();
                 return ventas;
-            }//Productos productos_ = //appDb.Productos.Update(producto);
-            return null;
-
+           
         }
-        public bool venta(decimal cantidad, int id_product, string Accion)
+        public async Task<OrderDtl> UpdateLinea(OrderDtl orderDtl)
         {
-            Productos producto = _context.Productos.Where(x => x.Id == id_product).FirstOrDefault();
-            if (producto == null)
-            {
-                return false;
-            }
-            else
-            {
-                if (producto.Inv_Act >= cantidad)
-                {
-                    if (Accion == "C")
-                    {
-                        RestarInv(cantidad, id_product);
-                        return true;
-                    }
-                    else if (Accion == "U")
-                    {
-                        RestaurarInv(cantidad, id_product);
-                        RestarInv(cantidad, id_product);
-                        return true;
-                    }
-                }
-            }
-            return true;
+            Productos productos = _context.Productos.Where(a => a.Id == orderDtl.Id_Producto).FirstOrDefault();
+            orderDtl.Nom_Prod = productos.Producto;
+            orderDtl.Valor = productos.Precio * orderDtl.Cantidad;
+            orderDtl.Impuestos = (productos.Precio * orderDtl.Cantidad) * 0.190000M;
+            _context.orderDtl.Update(orderDtl);
+            await _context.SaveChangesAsync();
+            return orderDtl;
+        }
+        public async Task<string> deleteorderline(OrderDtl orderDtl)
+        {
+            _context.orderDtl.Remove(orderDtl);
+            await _context.SaveChangesAsync();
+            return $"Se elimino satisfactoriamente la linea N° {orderDtl.OrderLine} del pedido N° {orderDtl.ID_OrderHed}";
+        }
+        public async Task<String> venta(OrderDtl orderDtl)
+        {
+            var linea = _context.orderDtl.Where(x => x.ID_OrderHed == orderDtl.ID_OrderHed).Select(s => s.OrderLine).DefaultIfEmpty().Max();
+            var producto = _context.Productos.Where(x => x.Id == orderDtl.Id_Producto).FirstOrDefault();
+            var numerolinea = linea == null ? 0 : linea;
+            decimal numlinea = Convert.ToDecimal(numerolinea);
+
+            orderDtl.OrderLine = (int)numlinea + 1;
+            orderDtl.Nom_Prod = producto.Producto;
+            orderDtl.Valor = producto.Precio * orderDtl.Cantidad;
+            orderDtl.Impuestos = (producto.Precio * orderDtl.Cantidad) * 0.19000M ;
+
+            OrderDtl dtl = orderDtl;
+            _context.orderDtl.Add(dtl);
+            await _context.SaveChangesAsync();
+
+            return $"Se creo satisfactoria la linea N°{orderDtl.OrderLine}  del Pedido N° {orderDtl.ID_OrderHed}.";
         }
         public void RestarInv(decimal cantidad, int id_product)
         {
@@ -131,5 +150,7 @@ namespace ApiKiosko.Mappers
                 _context.SaveChangesAsync();
             }
         }
+
+        
     }
 }

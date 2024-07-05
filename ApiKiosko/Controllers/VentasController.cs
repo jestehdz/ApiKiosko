@@ -21,7 +21,7 @@ namespace ApiKiosko.Controllers
         }
         // GET: api/Ventas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ventas>>> GetVentas()
+        public async Task<ActionResult<IEnumerable<OrderHed>>> GetVentas()
         {
             try
             {
@@ -40,7 +40,7 @@ namespace ApiKiosko.Controllers
 
         // GET: api/Ventas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Ventas>> GetClienteById(int id)
+        public async Task<ActionResult<OrderHed>> GetClienteById(int id)
         {
             try
             {
@@ -56,10 +56,27 @@ namespace ApiKiosko.Controllers
             return Ok(Response);
         }
 
+        [HttpGet("RetornarOV")]
+        public async Task<ActionResult<IEnumerable<OrderHed>>> GetByIDOrderDtl(int id_Ov)
+        {
+            try
+            {
+                var producto = await Ventas.GetOrderDtlByID_Ov(id_Ov);
+                Response.Result = producto;
+                Response.DisplayMessage = $"Lista de OV N° {id_Ov}";
+            }
+            catch (Exception ex)
+            {
+                Response.IsSuccess = false;
+                Response.ErrorMessages = new List<string> { ex.ToString() };
+            }
+            return Ok(Response);
+        }
+
         // PUT: api/Ventas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVentas(int id, Ventas Ventas_)
+        public async Task<IActionResult> PutVentas(int id, OrderHed Ventas_)
         {
             try
             {
@@ -77,11 +94,30 @@ namespace ApiKiosko.Controllers
                 return BadRequest(Response);
             }
         }
+        [HttpPut("UpdateLine")]
+        public async Task<IActionResult> putlinepedido(OrderDtl orderDtl)
+        {
+            try
+            {
+                var line = await Ventas.UpdateLinea(orderDtl);
+                Response.Result = line;
+                Response.DisplayMessage = $"La linea N° {orderDtl.OrderLine} del pedido N° {orderDtl.ID_OrderHed} ha sido actualizado correctamente";
+                return Ok(Response);
+            }
+            catch (Exception ex)
+            {
+                Response.IsSuccess = false;
+                Response.DisplayMessage = $"Se produjo un error al momento de actualizar la linea N° {orderDtl.OrderLine} del pedido N° {orderDtl.ID_OrderHed}. \n" +
+                    $"Por favor contacte al adminstrador";
+                Response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(Response);
+            }
+        }
 
         // POST: api/Ventas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<string>> PostVentas(Ventas Ventas_)
+        [HttpPost("CrearPedido")]
+        public async Task<ActionResult<string>> PostVentas(OrderHed Ventas_)
         {
             try
             {
@@ -100,6 +136,25 @@ namespace ApiKiosko.Controllers
             }
         }
 
+        [HttpPost("CrearLineaPedido")]
+        public async Task<ActionResult<string>> PostVentasDetalle(OrderDtl orderDtl)
+        {
+            try
+            {
+                var orderdtl = await Ventas.venta(orderDtl);
+                Response.Result = orderdtl;
+                Response.DisplayMessage = $"Se ha creado satisfactoiamente la linea del pedido.";
+                return Ok(Response);
+            }
+            catch (Exception ex)
+            {
+                Response.IsSuccess = false;
+                Response.DisplayMessage = $"Se produjo un error al momento de crear la linea del pedido," +
+                    $"por favor contacte con el administrador";
+                Response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(Response);
+            }
+        }
         // DELETE: api/Ventas/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVentas(int id)
@@ -128,6 +183,27 @@ namespace ApiKiosko.Controllers
                 return BadRequest(Response);
             }
         }
+        [HttpDelete("DeleteLinePedido")]
+        public async Task<IActionResult> DeleteLinePedido(OrderDtl orderDtl)
+        {
+            try
+            {
+                var lineDelete = await Ventas.deleteorderline(orderDtl);
+                Response.Result = lineDelete;
+                Response.DisplayMessage = "Se elimino correctamente";
+                return Ok(Response);
+            }
+            catch (Exception ex)
+            {
+                Response.IsSuccess = false;
+                Response.DisplayMessage = $"Se ha producido un error al momento de eliminar la linea N° {orderDtl.OrderLine}" +
+                    $" de la orden N° {orderDtl.ID_OrderHed}.\n" +
+                    "Por favor contactese con el administrador.";
+                Response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(Response);
+            }
+        }
 
+        
     }
 }
