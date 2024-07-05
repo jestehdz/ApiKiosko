@@ -46,7 +46,7 @@ namespace ApiKiosko.Controllers
             {
                 var producto = await Clientes.GetClienteById(id);
                 Response.Result = producto;
-                Response.DisplayMessage = "producto por ID";
+                Response.DisplayMessage = "Cliente por ID";
             }
             catch (Exception ex)
             {
@@ -65,13 +65,13 @@ namespace ApiKiosko.Controllers
             {
                 var producto = await Clientes.UpdateClientes(id, Clientes_);
                 Response.Result = producto;
-                Response.DisplayMessage = $"El Producto {producto.Nombres} ha sido actualizado correctamente";
+                Response.DisplayMessage = $"El Cliente {producto.Nombres} ha sido actualizado correctamente";
                 return Ok(Response);
             }
             catch (Exception ex)
             {
                 Response.IsSuccess = false;
-                Response.DisplayMessage = $"Se produjo un error al momento de actualizar el producto {Clientes_.Nombres}, " +
+                Response.DisplayMessage = $"Se produjo un error al momento de actualizar el Cliente {Clientes_.Nombres}, " +
                     $"por favor contate al administrador.";
                 Response.ErrorMessages = new List<string> { ex.ToString() };
                 return BadRequest(Response);
@@ -87,14 +87,14 @@ namespace ApiKiosko.Controllers
             {
                 var producto = await Clientes.CreateClientes(Clientes_);
                 Response.Result = producto;
-                Response.DisplayMessage = $"Se ha creado satisfactoriamente el producto {producto.Nombres} " +
+                Response.DisplayMessage = $"Se ha creado satisfactoriamente el Cliente {producto.Nombres} " +
                     $"que cuenta con el ID N°{producto.Id}";
                 return Ok(Response);
             }
             catch (Exception ex)
             {
                 Response.IsSuccess = false;
-                Response.DisplayMessage = $"Se produjo un error al momento de crear el producto {Clientes_.Nombres}," +
+                Response.DisplayMessage = $"Se produjo un error al momento de crear el Cliente {Clientes_.Nombres}," +
                     $"por favor contacte con el administrador";
                 Response.ErrorMessages = new List<string> { ex.ToString() };
                 return BadRequest(Response);
@@ -111,13 +111,13 @@ namespace ApiKiosko.Controllers
                 if (estadoeliminado)
                 {
                     Response.Result = estadoeliminado;
-                    Response.DisplayMessage = $"El producto con id N°{id} ha sido eliminado satisfactoriamente";
+                    Response.DisplayMessage = $"El Cliente con id N°{id} ha sido eliminado satisfactoriamente";
                     return Ok(Response);
                 }
                 else
                 {
                     Response.IsSuccess = false;
-                    Response.DisplayMessage = $"Se ha produccido un error al momento de eliminar el producto con identificador {id}," +
+                    Response.DisplayMessage = $"Se ha produccido un error al momento de eliminar el Cliente con identificador {id}," +
                         $" por favor contacte al administrador.";
                     return BadRequest(Response);
                 }
