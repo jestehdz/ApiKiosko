@@ -10,7 +10,7 @@ namespace ApiKiosko.Context
 
         }
         public DbSet<Productos> Productos { get; set; }
-        public DbSet<Clientes> Clientes { get; set;}
+        public DbSet<Clientes> Clientes { get; set; }
         public DbSet<OrderHed> OrderHed { get; set; }
         public DbSet<OrderDtl> orderDtl { get; set; }
         public DbSet<InvoiceHed> invoiceHed { get; set;}

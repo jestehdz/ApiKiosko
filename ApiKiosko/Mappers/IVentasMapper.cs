@@ -115,11 +115,11 @@ namespace ApiKiosko.Mappers
         {
             var linea = _context.orderDtl.Where(x => x.ID_OrderHed == orderDtl.ID_OrderHed).Select(s => s.OrderLine).DefaultIfEmpty().Max();
             var producto = _context.Productos.Where(x => x.Id == orderDtl.Id_Producto).FirstOrDefault();
-            var numerolinea = linea == null ? 0 : linea;
-            decimal numlinea = Convert.ToDecimal(numerolinea);
+            
+            decimal numlinea = Convert.ToDecimal(linea);
 
             orderDtl.OrderLine = (int)numlinea + 1;
-            orderDtl.Nom_Prod = producto.Producto;
+            orderDtl.Nom_Prod = producto.Producto == null ? "" : producto.Producto;
             orderDtl.Valor = producto.Precio * orderDtl.Cantidad;
             orderDtl.Impuestos = (producto.Precio * orderDtl.Cantidad) * 0.19000M ;
 
