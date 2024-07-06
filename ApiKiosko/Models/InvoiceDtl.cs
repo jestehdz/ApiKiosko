@@ -18,6 +18,6 @@ namespace ApiKiosko.Models
         public decimal cantidad { get; set; }
         public decimal valor {  get; set; }
         public decimal impuestos { get; set; }
-        public decimal fechaCrea { get; set; }
+        public DateTime fechaCrea { get; set; }
     }
 }
