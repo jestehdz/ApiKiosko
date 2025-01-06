@@ -4,6 +4,7 @@ using ApiKiosko.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging.Signing;
 
 namespace ApiKiosko.Mappers
 {
@@ -16,9 +17,15 @@ namespace ApiKiosko.Mappers
         {
             this.appDb = appDb;
         }
-        public async Task<List<Productos>> GetProductos()
+        public async Task<List<Productos>> GetProductos(string id)
         {
             List<Productos> productos = await appDb.Productos.ToListAsync();
+            if(!string.IsNullOrEmpty(id))
+            {
+                int ids = Convert.ToInt32(id);
+                List<Productos> products = await appDb.Productos.Where(x => x.Id == ids).ToListAsync();
+                return products;
+            }
             return productos;
         }
 
@@ -35,35 +42,67 @@ namespace ApiKiosko.Mappers
             }
         }
 
-        public async Task<bool> DeleteProducto(int Id)
+        public async Task<List<Productos>> DeleteProducto(List<Productos> productos)
         {
 
-            Productos productos = await appDb.Productos.FindAsync(Id);
-            if (productos == null)
+            List<Productos> productos1 = new List<Productos>();
+
+            foreach(var item in productos)
             {
-                return false;
+                Productos productosd = await appDb.Productos.FindAsync(item.Id);
+                if (productosd != null)
+                {
+                    //return false;
+                    appDb.Productos.Remove(productosd);
+                    await appDb.SaveChangesAsync();
+                    productos1.Add(item);
+                }
+                
             }
-            appDb.Productos.Remove(productos);
-            await appDb.SaveChangesAsync();
-            return true;
+            return productos1;
         }
-        public async Task<Productos> CreateProductos(Productos productos)
+                
+        public async Task<List<Productos>> CreateProductos(List<Productos> productos)
         {
-            Productos productos_ = productos;
-            appDb.Productos.Add(productos_);
-            await appDb.SaveChangesAsync();
-            return productos_;
-        }
-        public async Task<Productos> UpdateProductos(int id, Productos producto)
-        {
-            if (id != producto.Id)
+            List<Productos> productos1 = new List<Productos>();
+            foreach (var item in productos)
             {
-                producto.Id = id;
+                Productos productos_ = item;
+                appDb.Productos.Add(productos_);
+                await appDb.SaveChangesAsync();
+                productos1.Add(productos_);
+                //return productos_;
             }
-            appDb.Productos.Update(producto);
-            await appDb.SaveChangesAsync();
-            return producto;
+            return productos1;
         }
+        public async Task<List<Productos>> UpdateProductos(List<Productos> producto)
+        {
+            List<Productos> reproductos = new List<Productos>();
+            foreach (var item in producto)
+            {
+                
+                    var existingProduct = appDb.Productos
+                    .Local
+                    .FirstOrDefault(p => p.Id == item.Id);
+
+                    if (existingProduct != null)
+                    {
+                        // Si la entidad ya está rastreada, solo actualiza sus propiedades
+                        appDb.Entry(existingProduct).CurrentValues.SetValues(item);
+                    }
+                    else
+                    {
+                        // Si no está rastreada, realiza el seguimiento de la entidad
+                        appDb.Productos.Update(item);
+                    }
+
+                    reproductos.Add(item);
+                              
+            }
+            await appDb.SaveChangesAsync();
+            return reproductos;
+        }
+        
 
     }
 }
