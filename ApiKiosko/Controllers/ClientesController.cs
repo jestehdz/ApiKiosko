@@ -21,21 +21,20 @@ namespace ApiKiosko.Controllers
         }
         // GET: api/Clientes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Clientes>>> GetClientes()
+        public async Task<ActionResult<IEnumerable<Clientes>>> GetClientes(string? id)
         {
             try
             {
                 //return await _context.Clientes.ToListAsync();
-                var lista = await Clientes.GetClientes();
-                Response.Result = lista ;
-                Response.DisplayMessage = "Listado de Clientes";
+                var lista = await Clientes.GetClientes(id);
+                return Ok(lista);
             }
             catch (Exception ex)
             {
                 Response.IsSuccess = false;
                 Response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(Response);
             }
-            return Ok(Response);
         }
 
         // GET: api/Clientes/5
@@ -45,33 +44,30 @@ namespace ApiKiosko.Controllers
             try
             {
                 var producto = await Clientes.GetClienteById(id);
-                Response.Result = producto;
-                Response.DisplayMessage = "Cliente por ID";
+                return Ok(producto);
             }
             catch (Exception ex)
             {
                 Response.IsSuccess = false;
                 Response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(Response);
             }
-            return Ok(Response);
         }
 
         // PUT: api/Clientes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutClientes(int id, Clientes Clientes_)
+        [HttpPut]
+        public async Task<IActionResult> PutClientes(List< Clientes> Clientes_)
         {
             try
             {
-                var producto = await Clientes.UpdateClientes(id, Clientes_);
-                Response.Result = producto;
-                Response.DisplayMessage = $"El Cliente {producto.Nombres} ha sido actualizado correctamente";
-                return Ok(Response);
+                var producto = await Clientes.UpdateClientes( Clientes_);
+                return Ok(producto);
             }
             catch (Exception ex)
             {
                 Response.IsSuccess = false;
-                Response.DisplayMessage = $"Se produjo un error al momento de actualizar el Cliente {Clientes_.Nombres}, " +
+                Response.DisplayMessage = $"Se produjo un error al momento de actualizar los Clientes, " +
                     $"por favor contate al administrador.";
                 Response.ErrorMessages = new List<string> { ex.ToString() };
                 return BadRequest(Response);
@@ -81,20 +77,17 @@ namespace ApiKiosko.Controllers
         // POST: api/Clientes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Clientes>> PostClientes(Clientes Clientes_)
+        public async Task<ActionResult<Clientes>> PostClientes(List<Clientes> Clientes_)
         {
             try
             {
-                var producto = await Clientes.CreateClientes(Clientes_);
-                Response.Result = producto;
-                Response.DisplayMessage = $"Se ha creado satisfactoriamente el Cliente {producto.Nombres} " +
-                    $"que cuenta con el ID N°{producto.Id}";
-                return Ok(Response);
+                var producto = await Clientes.CreateClientes(Clientes_);                
+                return Ok(producto);
             }
             catch (Exception ex)
             {
                 Response.IsSuccess = false;
-                Response.DisplayMessage = $"Se produjo un error al momento de crear el Cliente {Clientes_.Nombres}," +
+                Response.DisplayMessage = $"Se produjo un error al momento de crear los Clientes," +
                     $"por favor contacte con el administrador";
                 Response.ErrorMessages = new List<string> { ex.ToString() };
                 return BadRequest(Response);
@@ -102,29 +95,20 @@ namespace ApiKiosko.Controllers
         }
 
         // DELETE: api/Clientes/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClientes(int id)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteClientes(List<Clientes> clientes)
         {
             try
             {
-                bool estadoeliminado = await Clientes.DeleteCliente(id);
-                if (estadoeliminado)
-                {
-                    Response.Result = estadoeliminado;
-                    Response.DisplayMessage = $"El Cliente con id N°{id} ha sido eliminado satisfactoriamente";
-                    return Ok(Response);
-                }
-                else
-                {
-                    Response.IsSuccess = false;
-                    Response.DisplayMessage = $"Se ha produccido un error al momento de eliminar el Cliente con identificador {id}," +
-                        $" por favor contacte al administrador.";
-                    return BadRequest(Response);
-                }
+                var estadoeliminado = await Clientes.DeleteCliente(clientes);                
+                return Ok(estadoeliminado);
+                
             }
             catch (Exception ex)
             {
                 Response.IsSuccess = false;
+                Response.DisplayMessage = $"Se ha produccido un error al momento de eliminar el Cliente con identificador ," +
+                        $" por favor contacte al administrador.";
                 Response.ErrorMessages = new List<string> { ex.ToString() };
                 return BadRequest(Response);
             }

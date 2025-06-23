@@ -12,9 +12,19 @@ namespace ApiKiosko.Mappers
         {
             _context = context;
         }
-        public async Task<List<Clientes>> GetClientes()
+        public async Task<List<Clientes>> GetClientes(string id)
         {
-            List<Clientes> Cliente = await _context.Clientes.ToListAsync();
+            List<Clientes> Cliente = new List<Clientes>();
+            
+            var client = await _context.Clientes.ToListAsync();
+            if(!string.IsNullOrEmpty(id))
+            {
+                int ids = Convert.ToInt32(id);
+                var clientes = client.Where(x => x.Id == ids).ToList();
+                Cliente = clientes;
+                return Cliente;
+            }
+            Cliente = client;
             return Cliente;
         }
 
@@ -31,35 +41,53 @@ namespace ApiKiosko.Mappers
             }
         }
 
-        public async Task<bool> DeleteCliente(int Id)
+        public async Task<List<Clientes>> DeleteCliente(List<Clientes> Id)
         {
-            
-            var Cliente = _context.Clientes.Where(i => i.Id == Id).FirstOrDefault() ;
-            if (Cliente == null)
+            List<Clientes> clientes = new List<Clientes>();
+            foreach(var item in Id)
             {
+                var Cliente = _context.Clientes.Where(i => i.Id == item.Id).FirstOrDefault();
+                if (Cliente != null)
+                {
+                    _context.Clientes.Remove(Cliente);
+                    clientes.Add(Cliente);
+                }
                 
-                return false;
-            }
-            _context.Clientes.Remove(Cliente);
+            }            
             await _context.SaveChangesAsync();
-            return true;
+            return clientes;
         }
-        public async Task<Clientes> CreateClientes(Clientes Cliente)
+        public async Task<List<Clientes>> CreateClientes(List<Clientes> Cliente)
         {
-            Clientes Cliente_ = Cliente;
-            _context.Clientes.Add(Cliente_);
-            await _context.SaveChangesAsync();
-            return Cliente_;
-        }
-        public async Task<Clientes> UpdateClientes(int id, Clientes Cliente)
-        {
-            if (id != Cliente.Id)
+            List<Clientes> clientes = new List<Clientes>();
+            foreach(var item in Cliente)
             {
-                Cliente.Id = id;
+                Clientes Cliente_ = item;
+                _context.Clientes.Add(Cliente_);
+                clientes.Add(Cliente_);
             }
-            _context.Clientes.Update(Cliente);
+            
             await _context.SaveChangesAsync();
-            return Cliente;
+            return clientes;
+        }
+        public async Task<List<Clientes>> UpdateClientes( List<Clientes> Cliente)
+        {
+            List<Clientes> clientes = new List<Clientes>();
+            foreach(var item in Cliente)
+            {
+                var existingclient = _context.Clientes.Local.FirstOrDefault(p => p.Id == item.Id);
+                if (existingclient != null)
+                {
+                    _context.Entry(existingclient).CurrentValues.SetValues(item);
+                }
+                else
+                {
+                    _context.Update(item);
+                }
+                clientes.Add(item);
+            }
+            await _context.SaveChangesAsync();
+            return clientes;
 
         }
     }

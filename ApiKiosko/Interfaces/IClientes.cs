@@ -4,10 +4,10 @@ namespace ApiKiosko.Interfaces
 {
     public interface IClientes 
     {
-        Task<List<Clientes>> GetClientes();
+        Task<List<Clientes>> GetClientes(string id);
         Task<Clientes> GetClienteById(int Id);
-        Task<bool> DeleteCliente(int Id);
-        Task<Clientes> CreateClientes(Clientes producto);
-        Task<Clientes> UpdateClientes(int id, Clientes producto);
+        Task<List<Clientes>> DeleteCliente(List<Clientes> Id);
+        Task<List<Clientes>> CreateClientes(List<Clientes> producto);
+        Task<List<Clientes>> UpdateClientes(List<Clientes> producto);
     }
 }

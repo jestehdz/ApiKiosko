@@ -5,6 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 // Add services to the container.
 //crar variable para la cadena de conexion
 var connectionString = builder.Configuration.GetConnectionString("Connection");
@@ -32,6 +41,12 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+
+// Usa la política de CORS
+app.UseCors("AllowAll");
+
 app.MapControllers();
 
 app.Run();
+
+
